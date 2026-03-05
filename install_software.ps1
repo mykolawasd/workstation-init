@@ -10,68 +10,68 @@ if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$scriptPath = $PSScriptRoot
-
 # ============================================================
-# 1. VISUAL C++ RUNTIMES
+# УСТАНОВКА ПРОГРАММ ЧЕРЕЗ WINGET
 # ============================================================
 Write-Host ""
-Write-Host "📦 Установка Visual C++ Runtimes..." -ForegroundColor White
-
-$vcZip = Join-Path -Path $scriptPath -ChildPath "Visual-C-Runtimes-All-in-One-Dec-2025.zip"
-$tempExtractedPath = Join-Path -Path $env:TEMP -ChildPath "VC_Runtimes_Temp"
-
-if (Test-Path $vcZip) {
-    Write-Host "   Извлечение файлов..."
-    if (Test-Path $tempExtractedPath) { Remove-Item -Path $tempExtractedPath -Recurse -Force }
-    Expand-Archive -Path $vcZip -DestinationPath $tempExtractedPath -Force
-    
-    $installBat = Join-Path -Path $tempExtractedPath -ChildPath "install_all.bat"
-    if (Test-Path $installBat) {
-        Write-Host "   Запуск установки..."
-        # Запуск install_all.bat и ожидание завершения
-        Start-Process -FilePath $installBat -WorkingDirectory $tempExtractedPath -Wait -NoNewWindow
-        Write-Host "   ✅ Visual C++ Runtimes установлены." -ForegroundColor Green
-    } else {
-        Write-Host "   ❌ Не найден install_all.bat в архиве." -ForegroundColor Red
-    }
-    
-    # Очистка
-    Remove-Item -Path $tempExtractedPath -Recurse -Force | Out-Null
-} else {
-    Write-Host "   ⚠️  Архив $vcZip не найден. Пропуск." -ForegroundColor Yellow
-}
-
-# ============================================================
-# 2. УСТАНОВКА ПРОГРАММ ЧЕРЕЗ WINGET
-# ============================================================
-Write-Host ""
-Write-Host "📥 Установка программ через Winget..." -ForegroundColor White
+Write-Host "Установка программ через Winget..." -ForegroundColor White
 
 $wingetApps = @(
-    "Bitwarden.Bitwarden",
-    "Rclone.Rclone",
-    "kapitainsky.RcloneBrowser",
-    "Microsoft.Sysinternals.Autoruns",
-    "EpicGames.EpicGamesLauncher",
-    "PeterPawlowski.foobar2000",
-    "Daum.PotPlayer",
-    "mcmilk.7zip-zstd",
-    "c0re100.qBittorrent-Enhanced-Edition",
-    "DuongDieuPhap.ImageGlass",
-    "yt-dlp.yt-dlp",
+    # --- 1. Системные библиотеки (Visual C++ Redistributables) ---
+    "Microsoft.VCRedist.2005.x86",
+    "Microsoft.VCRedist.2005.x64",
+    "Microsoft.VCRedist.2008.x86",
+    "Microsoft.VCRedist.2008.x64",
+    "Microsoft.VCRedist.2010.x86",
+    "Microsoft.VCRedist.2010.x64",
+    "Microsoft.VCRedist.2012.x86",
+    "Microsoft.VCRedist.2012.x64",
+    "Microsoft.VCRedist.2013.x86",
+    "Microsoft.VCRedist.2013.x64",
+    "Microsoft.VCRedist.2015+.x86",
+    "Microsoft.VCRedist.2015+.x64",
+
+    # --- 2. .NET Runtimes ---
+    "Microsoft.DotNet.DesktopRuntime.6",
+    "Microsoft.DotNet.DesktopRuntime.8",
+    "Microsoft.DotNet.DesktopRuntime.9",
+
+    # --- 3. Инструменты разработки ---
     "Git.Git",
     "Notepad++.Notepad++",
+    "EpicGames.EpicGamesLauncher",
+
+    # --- 3. Браузеры ---
     "Google.Chrome",
     "Mozilla.Firefox",
-    "AdrienAllard.FileConverter",
-    "Telegram.TelegramDesktop",
-    "LocalSend.LocalSend",
-    "SumatraPDF.SumatraPDF",
+
+    # --- 4. Системные утилиты ---
+    "mcmilk.7zip-zstd",
     "AntibodySoftware.WizTree",
     "voidtools.Everything.Lite",
+    "Microsoft.Sysinternals.Autoruns",
+    "AdrienAllard.FileConverter",
+
+    # --- 5. Медиа ---
+    "Daum.PotPlayer",
+    "PeterPawlowski.foobar2000",
+    "DuongDieuPhap.ImageGlass",
+    "SumatraPDF.SumatraPDF",
     "Gyan.FFmpeg.Shared",
-    "aria2.aria2"
+
+    # --- 6. Загрузчики и торренты ---
+    "aria2.aria2",
+    "yt-dlp.yt-dlp",
+    "c0re100.qBittorrent-Enhanced-Edition",
+
+    # --- 7. Мессенджеры и связь ---
+    "Telegram.TelegramDesktop",
+    "LocalSend.LocalSend",
+
+    # --- 8. Облако и синхронизация ---
+    "Bitwarden.Bitwarden",
+    "Rclone.Rclone",
+    "kapitainsky.RcloneBrowser"
 )
 
 foreach ($app in $wingetApps) {
